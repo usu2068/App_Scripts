@@ -112,5 +112,38 @@ El objetivo principal es **reducir riesgos operativos**, **mejorar la trazabilid
 
 ---
 
-## 📁 Estructura del Repositorio
+
+---
+
+## ⚠️ Nota Importante sobre `.clasp.json`
+
+El archivo `.clasp.json` contiene identificadores internos del proyecto Apps Script y **no se incluye en el repositorio público** por motivos de seguridad y buenas prácticas.
+
+---
+
+## 🛠️ Requisitos
+
+- Cuenta Google con acceso a:
+  - Google Sheets
+  - Google Drive
+  - Gmail
+- Proyecto de Google Apps Script
+- Permisos para:
+  - Envío de correos
+  - Lectura y movimiento de archivos en Drive
+
+---
+
+## 📌 Autor
+
+**Karen Lorena Pedraza Castañeda**  
+Analista de TI  
+Consultorías en Innovación Financiera S.A.S
+
+---
+
+## 📅 Última actualización
+
+Diciembre 2025
+
 
