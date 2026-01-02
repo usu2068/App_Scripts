@@ -1,178 +1,149 @@
-📧 Automatización de Recordatorios y Envío de Facturas – Google Apps Script
-📌 Descripción general
 
-Este proyecto implementa una automatización sobre Google Apps Script que cumple dos funciones principales:
+# 📊 Automatización Cuadro de Mando – Google Apps Script
 
-Gestión automática de recordatorios y alertas de pago a partir de un Google Sheet.
+Este repositorio contiene un **script de automatización desarrollado en Google Apps Script** para la gestión, control y notificación de **servicios, facturación y vencimientos**, basado en información registrada en Google Sheets y archivos almacenados en Google Drive.
 
-Envío semanal de facturas desde Google Drive por correo electrónico, evitando duplicados y manteniendo un historial de archivos ya enviados.
+El objetivo principal es **reducir riesgos operativos**, **mejorar la trazabilidad de pagos** y **automatizar notificaciones críticas**, manteniendo controles claros y auditables.
 
-El script está diseñado para operar de forma controlada, trazable y segura, utilizando únicamente servicios nativos de Google Workspace (Sheets, Drive y Gmail).
+---
 
-🧩 Arquitectura general
-Google Sheets (SERVICIOS2025)
-        │
-        ▼
-Google Apps Script
-        │
- ┌──────┴─────────┐
- │                │
- ▼                ▼
-Recordatorios     Envío de facturas
-(Gmail)           (Drive → Gmail)
+## 🎯 Objetivos del Proyecto
+
+- Automatizar **recordatorios y alertas de vencimiento de servicios**
+- Detectar **pagos vencidos** y notificar de forma prioritaria
+- Enviar **facturas semanales adjuntas** desde Google Drive
+- Evitar envíos duplicados y **ordenar el histórico de facturación**
+- Mantener un proceso **controlado, trazable y seguro**
 
-1️⃣ Gestión de recordatorios de pagos
-📄 Fuente de datos
+---
 
-Hoja de cálculo: SERVICIOS2025
+## 🧩 Arquitectura General
 
-Cada fila representa un servicio con:
+**Componentes involucrados:**
 
-Responsable
+- **Google Sheets**  
+  Cuadro de mando principal (`SERVICIOS2025`) con:
+  - Responsables
+  - Servicios
+  - Fechas de corte
+  - Ciclo de facturación
+  - Estado de pago por mes
 
-Servicio
+- **Google Apps Script**
+  - Lógica de validación
+  - Cálculo de fechas
+  - Agrupación de notificaciones
+  - Envío de correos HTML
 
-Concepto
+- **Gmail**
+  - Envío de correos automáticos
+  - Envío de facturas como adjuntos (PDF / ZIP)
 
-Fecha de corte
+- **Google Drive**
+  - Carpeta de facturas
+  - Carpeta de histórico para archivos enviados
 
-Ciclo de facturación
+---
 
-Monto
+## 🔁 Flujo de Funcionamiento
 
-Tarjeta asociada
+1. El script se ejecuta de forma programada (trigger)
+2. Se leen los datos del cuadro de mando
+3. Se valida:
+   - Responsable
+   - Fecha de corte
+   - Estado de pago del mes correspondiente
+4. Se clasifica cada servicio en:
+   - ✅ Pagado
+   - 🟡 Próximo a vencer
+   - 🚨 Vencido
+5. Se agrupan notificaciones por responsable
+6. Se envía **un solo correo consolidado por persona**
+7. En el envío semanal:
+   - Se adjuntan facturas nuevas (PDF / ZIP)
+   - Los archivos enviados se mueven a carpeta de historial
 
-Columnas dinámicas de pago mensual (ENERO PAGADO, FEBRERO PAGADO, etc.)
+---
 
-⚙️ Lógica de funcionamiento
+## 🚨 Gestión de Alertas y Recordatorios
 
-La función principal es:
+### Alertas Críticas
+- Pagos vencidos (+2 días)
+- Asunto prioritario
+- Colorización en hoja (rojo)
 
-gestionarRecordatorios()
+### Recordatorios Preventivos
+- Mensual: 7 días antes
+- Anual: 60 días antes
+- Correos agrupados por responsable
 
-Flujo de ejecución:
+### Semaforización Automática
+- 🟥 No pagado
+- 🟩 Pagado
 
-Lee todas las filas del Sheet.
+---
 
-Convierte y valida la fecha de corte (soporta:
+## 🧾 Envío Inteligente de Facturas
 
-Fechas reales
+- Se revisa una carpeta específica de Drive
+- Se envían únicamente:
+  - PDFs
+  - ZIPs
+- Las facturas enviadas:
+  - Se adjuntan al correo (no links)
+  - Se mueven automáticamente a `_Facturas Enviadas`
+- Evita:
+  - Reenvíos
+  - Duplicados
+  - Desorden en Drive
 
-“XX DE CADA MES”
+---
 
-Formatos texto comunes).
+## 🔐 Consideraciones de Seguridad
 
-Identifica dinámicamente la columna del mes correspondiente.
+- No se almacenan credenciales en el código
+- Se utilizan servicios nativos de Google:
+  - `MailApp`
+  - `GmailApp`
+  - `DriveApp`
+- El procesamiento se ejecuta **dentro del entorno de Google**
+- No se descargan ni ejecutan archivos localmente
+- Los archivos ZIP se envían **íntegros**, sin extracción
 
-Aplica semaforización visual:
+---
 
-🟢 Verde → Pagado
 
-🔴 Rojo → Pendiente
+---
 
-Evalúa el estado del servicio:
+## ⚠️ Nota Importante sobre `.clasp.json`
 
-🚨 Alerta crítica: pago vencido (+2 días).
+El archivo `.clasp.json` contiene identificadores internos del proyecto Apps Script y **no se incluye en el repositorio público** por motivos de seguridad y buenas prácticas.
 
-📅 Recordatorio: próximo a vencer (según ciclo mensual o anual).
+---
 
-Agrupa los mensajes por responsable.
+## 🛠️ Requisitos
 
-Envía un solo correo consolidado por persona.
+- Cuenta Google con acceso a:
+  - Google Sheets
+  - Google Drive
+  - Gmail
+- Proyecto de Google Apps Script
+- Permisos para:
+  - Envío de correos
+  - Lectura y movimiento de archivos en Drive
 
-✉️ Envío de correos
+---
 
-Servicio utilizado: MailApp
+## 📌 Autor
 
-Formato: HTML
-
-Contenido:
-
-Alertas críticas separadas de recordatorios
-
-Información clara del servicio, monto y fecha
-
-Copia fija a correos administrativos definidos en configuración.
-
-2️⃣ Envío inteligente de facturas desde Google Drive
-📂 Fuente de archivos
-
-Carpeta principal de Drive (ID configurable).
-
-Tipos de archivo admitidos:
-
-📄 PDF
-
-📦 ZIP (enviados sin alteración).
-
-⚙️ Función principal
-enviarFacturasInteligente()
-
-Flujo de ejecución:
-
-Accede a la carpeta configurada por ID.
-
-Busca o crea una única carpeta de historial:
-
-_Facturas Enviadas
-
-
-Filtra únicamente archivos PDF y ZIP.
-
-Adjunta los archivos al correo:
-
-ZIP → getBlob() (sin conversión).
-
-PDF → getAs(PDF).
-
-Envía el correo con todas las facturas nuevas.
-
-Mueve los archivos enviados a la carpeta de historial.
-
-✅ Esto garantiza:
-
-No reenviar facturas antiguas.
-
-Historial limpio y trazable.
-
-Idempotencia del proceso.
-
-🔐 Seguridad y control
-
-No se almacenan credenciales en el código.
-
-Permisos limitados a:
-
-Google Sheets
-
-Google Drive
-
-Gmail
-
-Todo el procesamiento ocurre dentro de la infraestructura de Google.
-
-No hay servicios externos ni dependencias de terceros.
-
-📁 Estructura del proyecto
-apps-scripts/
-│
-├─ EnvioCorreos.js
-├─ appsscript.json
-├─ README.md
-├─ .gitignore
-
-🚀 Despliegue y control de versiones
-
-Este proyecto se gestiona mediante clasp:
-
-clasp pull → Descargar cambios desde Google
-
-clasp push → Subir cambios a Google
-
-git → Control de versiones y trazabilidad
-
-🧠 Autor
-
-Karen Lorena Pedraza Castañeda
-Analista de TI
+**Karen Lorena Pedraza Castañeda**  
+Analista de TI  
 Consultorías en Innovación Financiera S.A.S
+
+---
+
+## 📅 Última actualización
+
+Diciembre 2025
+
+
